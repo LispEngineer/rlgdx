@@ -106,7 +106,8 @@
 ;;   AL lib: (EE) alc_cleanup: 1 device not closed
 ;; I'm not convinced this is worth its complexity.
 (defun join-lwjgl-thread ()
-  "Locates the 'LWJGL Application' thread and joins it, waiting for it to terminate completely."
+  "Locates the 'LWJGL Application' thread and joins it, waiting for it to terminate completely.
+   It tries a few times to find the thread in case it hasn't yet started."
   (loop for attempt from 1 to 10
         do (let* ((active-count (java:jstatic "activeCount" "java.lang.Thread"))
                   (thread-array (java:jnew-array "java.lang.Thread" active-count))
@@ -121,7 +122,7 @@
                 (progn
                   (format t "~&Waiting for LWJGL Application thread to terminate...~%")
                   (handler-case
-                      (java:jcall "join" found-thread)
+                    (java:jcall "join" found-thread)
                     (error (e)
                       (format t "~&Error joining thread: ~A~%" e)))
                   (return))
@@ -143,6 +144,9 @@
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "title" config) "ABCL libGDX Roguelike PoC")
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "width" config) 1280)
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "height" config) 720)
+        (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "forceExit" config) nil)
+        ;; As soon as this LwjglApplication is created, the game will start and run in a background
+        ;; thread called "LWJGL Application".
         (setf *app* (java:jnew "com.badlogic.gdx.backends.lwjgl.LwjglApplication" *game-instance* config))
         (when *exit-on-close*
           (join-lwjgl-thread)

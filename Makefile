@@ -4,11 +4,13 @@
 JDK_PATH = /opt/jdk-17.0.19+10
 ABCL_JAR = /opt/abcl-1.9.2/abcl.jar
 MAVEN_LIB = /usr/share/maven/lib/
+RLWRAP = rlwrap
 
 # Standard execution command for launching ABCL
 ABCL_CMD = JDK_HOME=$(JDK_PATH) $(JDK_PATH)/bin/java -jar $(ABCL_JAR)
+REPL_CMD = JDK_HOME=$(JDK_PATH) $(RLWRAP) $(JDK_PATH)/bin/java -jar $(ABCL_JAR)
 
-.PHONY: all build run test clean
+.PHONY: all build run test clean repl
 
 all: build
 
@@ -45,6 +47,10 @@ test:
 		--eval '(asdf:load-system :rlgdx)' \
 		--eval '(rlgdx:main)' \
 		-- --test
+
+repl:
+	$(REPL_CMD) \
+	  --eval '(load "load-repl.lisp")'
 
 # Removes compiled Lisp FASL files from the common-lisp ASDF cache
 clean:

@@ -5,6 +5,8 @@
 ;;;
 ;;; Make it easy to load everything into a clean new REPL instance
 
+(format t "Loading game code and libraries...~%")
+
 (require :abcl-contrib)
 (require :abcl-asdf)
 (setf abcl-asdf:*mvn-libs-directory* #p"/usr/share/maven/lib/")
@@ -17,6 +19,6 @@
 (in-package :rlgdx) ; This doesn't do anything in the REPL
 
 ;; TODO: Prompt the user with how to instantiate and run the game.
-(format t "Evaluate (in-package :rlgdx)(main) or (rlgdx:main) to launch the game.")
-(format t "Note that the game can be launched only once per JVM instance (for now?).")
+(format t "Evaluate (in-package :rlgdx)(main) or (rlgdx:main) to launch the game.~%")
+(format t "Note that the game can be launched only once per JVM instance (for now?).~%")
 

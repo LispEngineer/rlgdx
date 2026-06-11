@@ -144,6 +144,7 @@
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "title" config) "ABCL libGDX Roguelike PoC")
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "width" config) 1280)
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "height" config) 720)
+        ;; This prevents libGDX from exiting the program/JVM when the game instance exits.
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "forceExit" config) nil)
         ;; As soon as this LwjglApplication is created, the game will start and run in a background
         ;; thread called "LWJGL Application".

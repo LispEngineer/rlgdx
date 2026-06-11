@@ -35,7 +35,7 @@
 
 # Useful Commands
 
-TODO
+* Start an ABCL REPL: `JDK_HOME=/opt/jdk-17.0.19+10/ /opt/jdk-17.0.19+10/bin/java -jar /opt/abcl-1.9.2/abcl.jar`
 
 
 # Code Style Instructions
@@ -129,6 +129,8 @@ The Common Lisp libraries in use are:
 The Java libraries in use are:
 * [libGDX Home](https://libgdx.com/)
 * [libGDX GitHub](https://github.com/libgdx/libgdx)
+* [libGDX Maven Integration](https://libgdx.com/wiki/articles/maven-integration)
+* [libGDX Clojure Example](https://libgdx.com/wiki/jvm-langs/using-libgdx-with-clojure)
 
 ## Other Libraries of Interest but Not in Use
 

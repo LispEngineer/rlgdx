@@ -11,6 +11,19 @@ This is a proof of concept small roguelike game written in Common Lisp
 using the Armed Bear Common Lisp (ABCL) JVM-based Common Lisp
 implementation and the libGDX game graphics library.
 
+## Prerequisites
+
+* ABCL
+  * Mine is installed in `/opt/abcl-1.9.2`
+* Java JDK 17
+  * Mine is openjdk 17.0.19 2026-04-21 (Temurin-17.0.19+10)
+* Maven
+  * I'm using Ubuntu 24.04's provided `maven` package, `Apache Maven 3.8.7`
+
+### Prereq test
+
+* `JDK_HOME=/opt/jdk-17.0.19+10/ rlwrap /opt/jdk-17.0.19+10/bin/java -jar /opt/abcl-1.9.2/abcl.jar`
+* `(load "load-repl.lisp")`
 
 # Implementation Phases
 

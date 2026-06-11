@@ -85,9 +85,7 @@
   (when *texture*
     (java:jcall "dispose" *texture*)
     (setf *texture* nil))
-  (format t "~&Disposal complete.~%")
-  (when *exit-on-close*
-    (java:jstatic "exit" "java.lang.System" 0)))
+  (format t "~&Disposal complete.~%"))
 
 (defun ensure-game-class ()
   "Ensures that the runtime Game class is defined."
@@ -100,6 +98,35 @@
         '(("create" :void () rlgdx-create)
           ("render" :void () rlgdx-render)
           ("dispose" :void () rlgdx-dispose))))))
+
+;; This is necessary (well, not really necessary, but sorta kinda nice) because if you
+;; just exit in the previous way (java:jstatic "exit" "java.lang.System" 0) the
+;; audio library complains about incomplete cleanup. It says:
+;;   Disposal complete.
+;;   AL lib: (EE) alc_cleanup: 1 device not closed
+;; I'm not convinced this is worth its complexity.
+(defun join-lwjgl-thread ()
+  "Locates the 'LWJGL Application' thread and joins it, waiting for it to terminate completely."
+  (loop for attempt from 1 to 10
+        do (let* ((active-count (java:jstatic "activeCount" "java.lang.Thread"))
+                  (thread-array (java:jnew-array "java.lang.Thread" active-count))
+                  (found-thread nil))
+             (java:jstatic "enumerate" "java.lang.Thread" thread-array)
+             (dotimes (i active-count)
+               (let ((thr (java:jarray-ref thread-array i)))
+                 (when (and thr
+                            (string= (java:jcall "getName" thr) "LWJGL Application"))
+                   (setf found-thread thr))))
+             (if found-thread
+                (progn
+                  (format t "~&Waiting for LWJGL Application thread to terminate...~%")
+                  (handler-case
+                      (java:jcall "join" found-thread)
+                    (error (e)
+                      (format t "~&Error joining thread: ~A~%" e)))
+                  (return))
+                (sleep 0.1)))
+        finally (format t "~&Warning: LWJGL Application thread not found.~%")))
 
 (defun main ()
   "Launches the rlgdx game. Executes tests first if '--test' is specified in command-line arguments."
@@ -116,6 +143,10 @@
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "title" config) "ABCL libGDX Roguelike PoC")
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "width" config) 1280)
         (setf (java:jfield "com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration" "height" config) 720)
-        (setf *app* (java:jnew "com.badlogic.gdx.backends.lwjgl.LwjglApplication" *game-instance* config)))
+        (setf *app* (java:jnew "com.badlogic.gdx.backends.lwjgl.LwjglApplication" *game-instance* config))
+        (when *exit-on-close*
+          (join-lwjgl-thread)
+          (format t "~&LWJGL thread terminated. Exiting JVM.~%")
+          (ext:quit :status 0)))
       (format t "~&Finishing rlgdx...~%")
       0)))

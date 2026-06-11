@@ -14,5 +14,7 @@
 
 ;; Do not close the game when we're running from REPL
 (setf rlgdx:*exit-on-close* nil)
+(in-package :rlgdx)
 
 ;; TODO: Prompt the user with how to instantiate and run the game.
+(format t "Evaluate (main) or (rlgdx:main) to launch the game.")

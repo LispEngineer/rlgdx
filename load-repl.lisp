@@ -14,7 +14,9 @@
 
 ;; Do not close the game when we're running from REPL
 (setf rlgdx:*exit-on-close* nil)
-(in-package :rlgdx)
+(in-package :rlgdx) ; This doesn't do anything in the REPL
 
 ;; TODO: Prompt the user with how to instantiate and run the game.
-(format t "Evaluate (main) or (rlgdx:main) to launch the game.")
+(format t "Evaluate (in-package :rlgdx)(main) or (rlgdx:main) to launch the game.")
+(format t "Note that the game can be launched only once per JVM instance (for now?).")
+

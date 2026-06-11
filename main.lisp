@@ -153,5 +153,5 @@
           (join-lwjgl-thread)
           (format t "~&LWJGL thread terminated. Exiting JVM.~%")
           (ext:quit :status 0)))
-      (format t "~&Finishing rlgdx...~%")
+      (format t "~&Finishing main... Game may be running in a background thread.~%")
       0)))

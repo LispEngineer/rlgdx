@@ -23,10 +23,9 @@
     (:mvn "com.badlogicgames.gdx/gdx" :version "1.14.2")
     (:mvn "com.badlogicgames.gdx/gdx-backend-lwjgl" :version "1.14.2")
     (:mvn "com.badlogicgames.gdx/gdx-box2d" :version "1.14.2")
-    ;(:mvn "com.badlogicgames.gdx/gdx-box2d-platform" :version "1.14.2") ;; :classifier "natives-desktop"
     (:mvn "com.badlogicgames.gdx/gdx-bullet" :version "1.14.2")
-    ;(:mvn "com.badlogicgames.gdx/gdx-bullet-platform" :version "1.14.2") ;; :classifier "natives-desktop"
-    ;(:mvn "com.badlogicgames.gdx/gdx-platform" :version "1.14.2") ;; :classifier "natives-desktop"
+    (:file "packages")
+    (:file "main" :depends-on ("packages"))
   )
 
 :perform 
@@ -43,8 +42,8 @@
           
           (format t "~&Locating native binaries for: ~A:~A~%" group artifact)
           
-          ;; 1. Use the official API function strictly with positional arguments
-          (let ((cp-string (uiop:symbol-call :abcl-asdf :resolve-dependencies group artifact version)))
+          ;; 1. Use the official API function strictly with positional and keyword arguments
+          (let ((cp-string (uiop:symbol-call :abcl-asdf :resolve-dependencies group artifact :version version)))
             
             (if cp-string
                 ;; 2. Split the returned classpath string using the OS-native separator (":" or ";")

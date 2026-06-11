@@ -6,6 +6,8 @@
   You must **only** use git for read-only commands.
 * Do include detailed comments with any code written,
   or changes to code made.
+  * This includes: You must add detailed documentaion strings
+    or comments in the language appropriate fashion.
 * Update the `README.md` (sibling to this file)
   file with documentation on new features.
 * Update `antigravity-log.md` (as a sibling file to this
@@ -15,7 +17,7 @@
 * Do NOT make any changes to any other directories' files except
   for this project's directory and sub-directories unless explicitly
   directed by the user. All the work for this project is to be done
-  on this MonoGameLispDemo code only.
+  on this directory's code only.
 * Any question about *how* to do something should be answered with
   an explanation on how to accomplish the thing requested, without
   you making any changes to any files or executing any commands that
@@ -32,6 +34,7 @@
 * The JDK to use is located in `/opt/jdk-17.0.19+10/`.
 * ABCL source code, if necessary, is located in `../abcl/`
 * ABCL manual, if necessary, is at `../abcl-1.9.2.pdf`
+
 
 # Useful Commands
 
@@ -57,27 +60,30 @@ All new code must have tests. However:
   ```lisp
   (and arg-type
        spec-type
-    (dotnet:invoke spec-type "IsAssignableFrom" arg-type))
+    (do-something arg-type arg-type))
   ```
   But rather, write code like this:
   ```lisp
   (when (and arg-type spec-type)
-    (dotnet:invoke spec-type "IsAssignableFrom" arg-type))
+    (do-something spec-type arg-type))
   ```
+* Format the "then" and "else" clauses of a Common Lisp `if` statement
+  aligned with one indent only.
+
 # Markdown
 
-1. Don't put gratuitous spaces in markdown files; use the minimal 
-   synctactally correct whitespace
-   * Example: Never have two spaces where one is semantically all
-     that is necessary
-2. Wrap markdown lines between 80 and 100 characters long except when
-   not syntactically possible.
-3. If you are backtick-quoting something that contains a (single) backtick,
-   you must use two leading and trailing backticks. Then, the single
-   backtick can be left alone (that is, unduplicated).
-   * Example: ``List`1``
-   * If the backtick is the first item that is in the backtick-quoted
-     expression, just add a preceeding space for now.
+* Don't put gratuitous spaces in markdown files; use the minimal 
+  synctactally correct whitespace
+  * Example: Never have two spaces where one is semantically all
+    that is necessary
+* Wrap markdown lines between 80 and 100 characters long except when
+  not syntactically possible.
+* If you are backtick-quoting something that contains a (single) backtick,
+  you must use two leading and trailing backticks. Then, the single
+  backtick can be left alone (that is, unduplicated).
+  * Example: ``List`1``
+  * If the backtick is the first item that is in the backtick-quoted
+    expression, just add a preceeding space for now.
 
 
 # Language
@@ -132,7 +138,7 @@ The Java libraries in use are:
 * [libGDX Maven Integration](https://libgdx.com/wiki/articles/maven-integration)
 * [libGDX Clojure Example](https://libgdx.com/wiki/jvm-langs/using-libgdx-with-clojure)
 
-## Other Libraries of Interest but Not in Use
+## Other Libraries of Interest but Not (Yet) in Use
 
 * [QuickLisp](www.quicklisp.org/beta/) - Package downloader for CL
   * [QuickLisp Libraries](https://www.quicklisp.org/beta/releases.html)
@@ -142,3 +148,9 @@ The Java libraries in use are:
     * [Qlot HN Discussion](https://news.ycombinator.com/item?id=41167921)
   * [Ultralisp](https://ultralisp.org/) - Frequently updated package repository
     for QuickLisp
+
+* Common CL libraries:
+  * Alexandria
+  * Seraphim
+  * Anaphora
+  * Swank (network REPL listener), or Slynk

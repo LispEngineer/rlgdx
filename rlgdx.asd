@@ -26,6 +26,7 @@
     (:mvn "com.badlogicgames.gdx/gdx-bullet" :version "1.14.2")
     (:file "packages")
     (:file "main" :depends-on ("packages"))
+    (:file "tests" :depends-on ("main"))
   )
 
 :perform 

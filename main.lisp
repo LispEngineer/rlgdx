@@ -28,6 +28,9 @@
 (defparameter *app* nil
   "The LwjglApplication instance running the game.")
 
+(defparameter *exit-on-close* t
+  "If non-nil, the application exits the JVM with status 0 upon disposal.")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; libGDX Game class - basic implementation
 
@@ -42,7 +45,7 @@
     (format t "~&Initialization complete. SpriteBatch and Texture loaded.~%")))
 
 (defun rlgdx-render (this)
-  "Called on every frame. Checks for the ESC key to exit, clears the screen to charcoal, and renders the centered sprite."
+  "Called on every frame. Checks for the ESC key to exit, clears the screen to charcoal, and renders the scaled sprite."
   (declare (ignore this))
   ;; 1. Check for exit input (ESC)
   (let* ((input (java:jfield "com.badlogic.gdx.Gdx" "input"))
@@ -59,17 +62,17 @@
     (java:jcall "glClearColor" gl 0.15f0 0.15f0 0.15f0 1.0f0)
     (java:jcall "glClear" gl mask))
 
-  ;; 3. Render the centered sprite
+  ;; 3. Render the sprite scaled to half the smaller window dimension
   (when (and *batch* *texture*)
     (let* ((graphics (java:jfield "com.badlogic.gdx.Gdx" "graphics"))
            (w (coerce (java:jcall "getWidth" graphics) 'single-float))
            (h (coerce (java:jcall "getHeight" graphics) 'single-float))
-           (tex-w (coerce (java:jcall "getWidth" *texture*) 'single-float))
-           (tex-h (coerce (java:jcall "getHeight" *texture*) 'single-float))
-           (x (/ (- w tex-w) 2.0f0))
-           (y (/ (- h tex-h) 2.0f0)))
+           ;; Calculate target size as half of the smaller window dimension
+           (target-size (/ (min w h) 2.0f0))
+           (x (/ (- w target-size) 2.0f0))
+           (y (/ (- h target-size) 2.0f0)))
       (java:jcall "begin" *batch*)
-      (java:jcall "draw" *batch* *texture* x y)
+      (java:jcall "draw" *batch* *texture* x y target-size target-size)
       (java:jcall "end" *batch*))))
 
 (defun rlgdx-dispose (this)
@@ -82,7 +85,9 @@
   (when *texture*
     (java:jcall "dispose" *texture*)
     (setf *texture* nil))
-  (format t "~&Disposal complete.~%"))
+  (format t "~&Disposal complete.~%")
+  (when *exit-on-close*
+    (ext:quit :status 0)))
 
 (defun ensure-game-class ()
   "Ensures that the runtime Game class is defined."
@@ -90,65 +95,17 @@
     (setf *game-class*
       (java:jnew-runtime-class
         "cc.dpf.rlgdx.Game"
-        ;; TODO: Why ApplicationAdapter here and not Game?
         :superclass "com.badlogic.gdx.ApplicationAdapter"
         :methods
         '(("create" :void () rlgdx-create)
           ("render" :void () rlgdx-render)
           ("dispose" :void () rlgdx-dispose))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Tests
-
-(defun run-tests ()
-  "Runs language-native tests for the rlgdx project and prints the results to *error-output*."
-  (format *error-output* "~&[TEST] Running rlgdx unit tests...~%")
-  (let ((failures 0))
-    ;; Test 1: Check if sprite image file exists
-    (if (probe-file "assets/sprite.png")
-      (format *error-output* "[TEST] PASS: assets/sprite.png exists.~%")
-      (progn
-        (format *error-output* "[TEST] FAIL: assets/sprite.png does not exist.~%")
-        (incf failures)))
-
-    ;; Test 2: Check package exports
-    (if (and (find-symbol "MAIN" :rlgdx)
-             (find-symbol "RLGDX-CREATE" :rlgdx)
-             (find-symbol "RLGDX-RENDER" :rlgdx)
-             (find-symbol "RLGDX-DISPOSE" :rlgdx))
-      (format *error-output* "[TEST] PASS: Exported package symbols are present.~%")
-      (progn
-        (format *error-output* "[TEST] FAIL: Missing exported symbols in package :rlgdx.~%")
-        (incf failures)))
-
-    ;; Test 3: Check class definition
-    (handler-case
-      (progn
-        (ensure-game-class)
-        (if *game-class*
-          (format *error-output* "[TEST] PASS: Game class successfully defined in JVM.~%")
-          (progn
-            (format *error-output* "[TEST] FAIL: Game class is nil.~%")
-            (incf failures))))
-      (error (e)
-        (format *error-output* "[TEST] FAIL: Error creating Game class: ~A~%" e)
-        (incf failures)))
-
-    ;; Summary
-    (if (zerop failures)
-      (progn
-        (format *error-output* "[TEST] SUMMARY: All tests passed successfully.~%")
-        t)
-      (progn
-        (format *error-output* "[TEST] SUMMARY: ~D test(s) failed.~%" failures)
-        nil))))
-
 (defun main ()
   "Launches the rlgdx game. Executes tests first if '--test' is specified in command-line arguments."
   (if (member "--test" ext:*command-line-argument-list* :test #'string=)
     (let ((success (run-tests)))
       (ext:quit :status (if success 0 1)))
-
     (progn
       (format t "~&Starting rlgdx...~%")
       (ensure-game-class)

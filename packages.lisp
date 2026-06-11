@@ -7,7 +7,10 @@
 
 (defpackage #:rlgdx
   (:use #:cl)
-  (:export #:main
-           #:rlgdx-create
-           #:rlgdx-render
-           #:rlgdx-dispose))
+  (:export 
+    #:*app*
+    #:*exit-on-close*
+    #:main
+    #:rlgdx-create
+    #:rlgdx-render
+    #:rlgdx-dispose))

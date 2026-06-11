@@ -1,4 +1,9 @@
-;; Do something like this: https://libgdx.com/wiki/jvm-langs/using-libgdx-with-clojure
+;;; load-repl.lisp
+;;;
+;;; Author: Douglas P. Fields, Jr. - symbolics@lisp.engineer
+;;; Copyright 2026 Douglas P. Fields, Jr. - License Apache 2.0
+;;;
+;;; Make it easy to load everything into a clean new REPL instance
 
 (require :abcl-contrib)
 (require :abcl-asdf)
@@ -7,20 +12,7 @@
 (push #p"/home/dfields/src/cl/abcl-libgdx/" asdf:*central-registry*)
 (asdf:load-system :rlgdx)
 
-(defparameter *my-game-class*
-  ;; We need to save this, because it doesn't add the class to the system
-  ;; class loader used by java:jnew
-  (java:jnew-runtime-class
-    "cc.dpf.rlgdx.Game"
-    :superclass "com.badlogic.gdx.Game"
-    :methods
-    '(("create" :void () rlgdx-create))))
+;; Do not close the game when we're running from REPL
+(setf rlgdx:*exit-on-close* nil)
 
-(defun rlgdx-create (this)
-  (format t "My libGDX Game class is alive!~%"))
-
-;; This works because you are passing the actual Class object, not a string.
-(defparameter *game-instance* (java:jnew *my-game-class*))
-
-;; Pass the *game-instance* into the application
-(defparameter *app* (java:jnew "com.badlogic.gdx.backends.lwjgl.LwjglApplication" *game-instance*))
+;; TODO: Prompt the user with how to instantiate and run the game.

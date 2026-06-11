@@ -53,7 +53,7 @@ A key thing to note in this phase is that as much of the
 code should be in Common Lisp as possible, with minimal use
 of Java except when absolutely necessary.
 
-## Phase 1
+## Phase 1 - DONE
 
 Tooling:
 * Create all the necessary files to make an ABCL project that
@@ -74,7 +74,7 @@ Game Functionality:
 * Display a simple sprite (image) in an otherwise blank window.
 * Quit when ESC is pressed.
 
-## Phase 1A: Cleanup
+## Phase 1A: Cleanup - DONE
 
 * Have `make run` exit cleanly; currently it gets `Error 255`
   * Determine how to set the Java return value from ending the game to 0
@@ -82,7 +82,7 @@ Game Functionality:
 * Make the displayed sprite be half the height or width of the window -
   whichever is smaller.
 
-## Phase 1B: CLOS
+## Phase 1B: CLOS - DONE
 
 * Have the Game Class `cc.dpf.rlgdx.Game` be calling into a CLOS class that has the
   methods defined on it for `create`, `render` and `dispose` (and others - see below).
@@ -148,6 +148,75 @@ TODO
 Located in the `assets` subdirectory.
 
 * `sprite.png`: Gemini created sprite for testing
+
+
+# Java and CLOS Class Interface into libGDX
+
+The game initializes a hybrid class interface bridging the Java Virtual Machine (JVM)
+and the Common Lisp Object System (CLOS). This design delegates libGDX application
+lifecycle events directly to CLOS methods.
+
+## Architecture
+
+1. **Java Runtime Class Generation**:
+   The runtime Java class `cc.dpf.rlgdx.Game` is defined dynamically at startup using
+   `java:jnew-runtime-class`. It extends the standard `com.badlogic.gdx.Game` class.
+2. **Encapsulated Field Reference**:
+   The Java class contains a public field referencing the CLOS class instance. During
+   instantiation, the CLOS instance is passed to the constructor and stored in this field.
+3. **Delegation**:
+   When libGDX invokes lifecycle events (like `create`, `render`, etc.) on the Java game
+   instance, they trigger inline Lisp lambda closures. These closures retrieve the CLOS
+   object from the Java field and delegate execution to corresponding CLOS generic functions.
+
+## Java Class: `cc.dpf.rlgdx.Game`
+
+This is dynamically created with `java:jnew-runtime-class`. Since it won't be available
+to the regular system class loader, to create instances it is necessary to use the class
+object, which is stored in `*game-class*`.
+
+### Fields
+* `CLOSGame`: A public instance field of type `org.armedbear.lisp.LispObject`. Stores the
+  reference to the corresponding Lisp `rlgdx-game` CLOS object.
+
+### Constructors
+* `cc.dpf.rlgdx.Game(LispObject closGame)`: Initializes the object by storing the reference
+  to the CLOS object in the `CLOSGame` field.
+
+### Methods
+* `void create()`: Retrieves `CLOSGame` and calls `gdx-create`.
+* `void resize(int width, int height)`: Retrieves `CLOSGame` and calls `gdx-resize`.
+* `void render()`: Retrieves `CLOSGame` and calls `gdx-render`.
+* `void pause()`: Retrieves `CLOSGame` and calls `gdx-pause`.
+* `void resume()`: Retrieves `CLOSGame` and calls `gdx-resume`.
+* `void dispose()`: Retrieves `CLOSGame` and calls `gdx-dispose`.
+
+Each method passes the `this` object as the first parameter. This is redundant as
+the `rlgdx-game` also stores a reference to the `cc.dpf.rlgdx.Game` object.
+
+## CLOS Class: `rlgdx-game`
+
+### Slots
+* `batch`: Accessor `game-batch` (initform `nil`). Stores the
+  `com.badlogic.gdx.graphics.g2d.SpriteBatch` used for rendering.
+* `texture`: Accessor `game-texture` (initform `nil`). Stores the loaded
+  `com.badlogic.gdx.graphics.Texture` asset representing the sprite.
+* `game-class`: Accessor `game-class` (initform `nil`). Stores the generated Java class reference.
+* `game-instance`: Accessor `game-instance` (initform `nil`). Stores the instance of the Java class.
+* `exit-on-close`: Accessor `game-exit-on-close` (initform `*exit-on-close*`).
+  Determines if the JVM exits upon window disposal.
+
+### Methods
+* `gdx-create (game this)`: Initializes graphics, creating the sprite batch and loading the texture.
+* `gdx-resize (game this width height)`: Placeholder method for handling window resizing.
+* `gdx-render (game this)`: Checks for the `ESC` key to exit, clears the screen,
+  and draws the centered, dynamically scaled sprite.
+* `gdx-pause (game this)`: Placeholder method for handling application minimization or pausing.
+* `gdx-resume (game this)`: Placeholder method for handling application focus restoration.
+* `gdx-dispose (game this)`: Releases the sprite batch and texture assets to prevent JVM memory leaks.
+
+The first parameter is, as always, the CLOS instance. The second is the Java class
+instance by convention.
 
 
 # License

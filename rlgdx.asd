@@ -23,7 +23,8 @@
     (:mvn "com.badlogicgames.gdx/gdx-box2d" :version "1.14.2")
     (:mvn "com.badlogicgames.gdx/gdx-bullet" :version "1.14.2")
     (:file "packages")
-    (:file "main" :depends-on ("packages"))
+    (:file "game" :depends-on ("packages"))
+    (:file "main" :depends-on ("game"))
     (:file "tests" :depends-on ("main"))
   )
 

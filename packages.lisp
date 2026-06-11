@@ -8,9 +8,19 @@
 (defpackage #:rlgdx
   (:use #:cl)
   (:export 
+    ;; Globals
     #:*app*
+    #:*active-game*
+    #:*game-instance*
     #:*exit-on-close*
+    
+    ;; Entry Point
     #:main
-    #:rlgdx-create
-    #:rlgdx-render
-    #:rlgdx-dispose))
+
+    ;; CLOS Class and Accessors
+    #:rlgdx-game
+    #:game-batch
+    #:game-texture
+    #:game-class
+    #:game-instance
+    #:game-exit-on-close))

@@ -20,9 +20,10 @@
 
     ;; Test 2: Check package exports
     (if (and (find-symbol "MAIN" :rlgdx)
-             (find-symbol "RLGDX-CREATE" :rlgdx)
-             (find-symbol "RLGDX-RENDER" :rlgdx)
-             (find-symbol "RLGDX-DISPOSE" :rlgdx))
+             (find-symbol "RLGDX-GAME" :rlgdx)
+             (find-symbol "GAME-BATCH" :rlgdx)
+             (find-symbol "GAME-TEXTURE" :rlgdx)
+             (find-symbol "GAME-INSTANCE" :rlgdx))
       (format *error-output* "[TEST] PASS: Exported package symbols are present.~%")
       (progn
         (format *error-output* "[TEST] FAIL: Missing exported symbols in package :rlgdx.~%")

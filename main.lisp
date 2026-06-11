@@ -87,7 +87,7 @@
     (setf *texture* nil))
   (format t "~&Disposal complete.~%")
   (when *exit-on-close*
-    (ext:quit :status 0)))
+    (java:jstatic "exit" "java.lang.System" 0)))
 
 (defun ensure-game-class ()
   "Ensures that the runtime Game class is defined."

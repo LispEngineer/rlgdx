@@ -76,12 +76,16 @@
     (finish-output)))
 
 (defmethod gdx-resize ((game rlgdx-game) this width height)
-  "Placeholder for handling window resizing events."
-  (declare (ignore this width height))
-  nil)
+  "Updates the SpriteBatch projection matrix to the new window dimensions upon resize."
+  (declare (ignore this))
+  (let ((batch (game-batch game)))
+    (when batch
+      (let ((matrix (java:jnew "com.badlogic.gdx.math.Matrix4")))
+        (java:jcall "setToOrtho2D" matrix 0.0f0 0.0f0 (coerce width 'single-float) (coerce height 'single-float))
+        (java:jcall "setProjectionMatrix" batch matrix)))))
 
 (defmethod gdx-render ((game rlgdx-game) this)
-  "Checks for the escape key to quit, clears the graphics buffer, and renders the scaled sprite."
+  "Checks for the escape key to quit, clears the graphics buffer, and renders the scaled sprite proportionally."
   (declare (ignore this))
   ;; 1. Check for exit input (ESCAPE)
   (let* ((input (java:jfield "com.badlogic.gdx.Gdx" "input"))
@@ -99,19 +103,29 @@
     (java:jcall "glClearColor" gl 0.15f0 0.15f0 0.15f0 1.0f0)
     (java:jcall "glClear" gl mask))
 
-  ;; 3. Render the sprite scaled to half the smaller window dimension
+  ;; 3. Render the sprite scaled proportionally to half the smaller window dimension
   (let ((batch (game-batch game))
         (texture (game-texture game)))
     (when (and batch texture)
       (let* ((graphics (java:jfield "com.badlogic.gdx.Gdx" "graphics"))
              (w (coerce (java:jcall "getWidth" graphics) 'single-float))
              (h (coerce (java:jcall "getHeight" graphics) 'single-float))
-             ;; Calculate target size as half of the smaller window dimension
-             (target-size (/ (min w h) 2.0f0))
-             (x (/ (- w target-size) 2.0f0))
-             (y (/ (- h target-size) 2.0f0)))
+             (tex-w (coerce (java:jcall "getWidth" texture) 'single-float))
+             (tex-h (coerce (java:jcall "getHeight" texture) 'single-float))
+             (aspect-ratio (/ tex-w tex-h))
+             ;; Calculate target limit as half of the smaller window dimension
+             (limit (/ (min w h) 2.0f0))
+             ;; Determine target dimensions preserving texture aspect ratio
+             (target-w (if (>= aspect-ratio 1.0f0)
+                           limit
+                           (* limit aspect-ratio)))
+             (target-h (if (>= aspect-ratio 1.0f0)
+                           (/ limit aspect-ratio)
+                           limit))
+             (x (/ (- w target-w) 2.0f0))
+             (y (/ (- h target-h) 2.0f0)))
         (java:jcall "begin" batch)
-        (java:jcall "draw" batch texture x y target-size target-size)
+        (java:jcall "draw" batch texture x y target-w target-h)
         (java:jcall "end" batch)))))
 
 (defmethod gdx-pause ((game rlgdx-game) this)

@@ -18,7 +18,8 @@
 
 ;; Do not close the game when we're running from REPL
 (setf rlgdx:*exit-on-close* nil)
-(in-package :rlgdx) ; This doesn't do anything in the REPL
+(in-package :rlgdx) ; This doesn't do anything in the REPL UI
+;; Instead, use --eval '(in-package :rlgdx)' in the ABCL command line
 
 ;; TODO: Prompt the user with how to instantiate and run the game.
 (format t "Evaluate (in-package :rlgdx)(main) or (rlgdx:main) to launch the game.~%")

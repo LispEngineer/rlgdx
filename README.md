@@ -103,15 +103,17 @@ Each step in this Phase should be accomplished independently, so as not to
 cause complexity if one part of it doesn't work.
 
 Tooling:
-1. Create a `repl` Makefile target.
+1. Create a `repl` Makefile target. - DONE
    * This should start an ACBL REPL with `rlwrap`.
    * This should load the `rlgdx` package at startup, using the
      `load-repl.lisp` file.
    * This should set the initial package to `rlgdx`.
+     * This is done with an `--eval` command line to set the package,
+       since it can't be done in `load-repl.lisp`.
    * This should output a message to the user telling them how
      to invoke the game.
 2. Load `alexandria` library in the `.asd` and make some tests proving
-   it is loaded and works.
+   it is loaded and works. - DONE
 3. Start up a backround REPL socket listener at program start.
    * Set up a way to call into the main OpenGL thread (since it is single-threaded)
      to make something run on that thread.

@@ -19,6 +19,8 @@ implementation and the libGDX game graphics library.
   * Mine is openjdk 17.0.19 2026-04-21 (Temurin-17.0.19+10)
 * Maven
   * I'm using Ubuntu 24.04's provided `maven` package, `Apache Maven 3.8.7`
+* Quicklisp
+  * This must be installed in `~/quicklisp/setup.lisp`
 
 ### Prereq test
 
@@ -141,6 +143,53 @@ TODO
 ## Phase N:
 
 * Packaging for macOS, iOS - I don't have any current Macs so can't do this.
+
+
+# Dependency Management
+
+The project uses a hybrid vendoring approach to manage third-party Common Lisp libraries.
+It uses Quicklisp's built-in `bundle-systems` feature to fetch and package dependencies 
+into a self-contained `vendor/` directory.
+
+This ensures that the repository remains fully self-contained, and anyone can build or run
+the game offline without needing Quicklisp installed locally, while still enabling the
+easy update of libraries using Quicklisp's powerful package resolution.
+
+## How it works
+1. **Fetching**: The script `update-dependencies.lisp` loads the local Quicklisp installation 
+   and uses `ql:bundle-systems` to download the required libraries (like `alexandria`) directly
+   into the `vendor/` directory.
+   * This is typically installed in `~/quicklisp/setup.lisp` after it's been set up.
+2. **Loading**: The script automatically generates a `vendor/bundle.lisp` file.
+3. **Execution**: During `make build`, `make run`, `make test`, or when running the `load-repl.lisp`
+   script, the system checks if `vendor/bundle.lisp` exists. If it does, it loads it. This configures
+   ASDF to seamlessly load the vendored libraries before loading the main project system.
+
+## How to use it
+
+### Updating existing dependencies
+
+To re-download or update the existing dependencies from Quicklisp, run:
+```bash
+make vendor-deps
+```
+*Note: You must have Quicklisp installed at `~/quicklisp/setup.lisp` to run this target.*
+
+### Adding new dependencies
+
+To add a new library:
+1. Open `update-dependencies.lisp`.
+2. Locate the line: `(ql:bundle-systems '(:alexandria) :to "vendor/")`
+3. Add the new library to the quoted list, for example: 
+   * `(ql:bundle-systems '(:alexandria :bordeaux-threads) :to "vendor/")`
+4. Add the library to the `:depends-on` list in `rlgdx.asd`.
+5. Run `make vendor-deps`.
+
+## References
+
+* [Quicklisp Site](https://www.quicklisp.org/beta/)
+* [Quicklisp Bundles Documentation](https://www.quicklisp.org/beta/bundles.html) - Documentation 
+  on how `ql:bundle-systems` creates standalone bundles that can be loaded independently.
 
 
 # Assets

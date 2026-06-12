@@ -42,6 +42,19 @@
         (format *error-output* "[TEST] FAIL: Error creating Game class: ~A~%" e)
         (incf failures)))
 
+    ;; Test 4: Check Alexandria Integration
+    (handler-case
+      (let ((iota-list (alexandria:iota 5))
+            (expected-list '(0 1 2 3 4)))
+        (alexandria:if-let ((matched (equal iota-list expected-list)))
+          (format *error-output* "[TEST] PASS: Alexandria successfully loaded and working.~%")
+          (progn
+            (format *error-output* "[TEST] FAIL: Alexandria iota returned ~A instead of expected ~A.~%" iota-list expected-list)
+            (incf failures))))
+      (error (e)
+        (format *error-output* "[TEST] FAIL: Error running Alexandria tests: ~A~%" e)
+        (incf failures)))
+
     ;; Summary
     (if (zerop failures)
       (progn

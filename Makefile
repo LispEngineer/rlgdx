@@ -10,7 +10,7 @@ RLWRAP = rlwrap
 ABCL_CMD = JDK_HOME=$(JDK_PATH) $(JDK_PATH)/bin/java -jar $(ABCL_JAR)
 REPL_CMD = JDK_HOME=$(JDK_PATH) $(RLWRAP) $(JDK_PATH)/bin/java -jar $(ABCL_JAR)
 
-.PHONY: all build run test clean repl
+.PHONY: all build run test clean repl vendor-deps
 
 all: build
 
@@ -22,6 +22,7 @@ build:
 		--eval '(setf abcl-asdf:*mvn-libs-directory* #p"$(MAVEN_LIB)")' \
 		--eval '(abcl-asdf:ensure-mvn-version)' \
 		--eval '(push #p"$(CURDIR)/" asdf:*central-registry*)' \
+		--eval '(when (probe-file "vendor/bundle.lisp") (load "vendor/bundle.lisp"))' \
 		--eval '(asdf:compile-system :rlgdx)' \
 		--eval '(ext:quit)'
 
@@ -33,6 +34,7 @@ run:
 		--eval '(setf abcl-asdf:*mvn-libs-directory* #p"$(MAVEN_LIB)")' \
 		--eval '(abcl-asdf:ensure-mvn-version)' \
 		--eval '(push #p"$(CURDIR)/" asdf:*central-registry*)' \
+		--eval '(when (probe-file "vendor/bundle.lisp") (load "vendor/bundle.lisp"))' \
 		--eval '(asdf:load-system :rlgdx)' \
 		--eval '(rlgdx:main)'
 
@@ -44,6 +46,7 @@ test:
 		--eval '(setf abcl-asdf:*mvn-libs-directory* #p"$(MAVEN_LIB)")' \
 		--eval '(abcl-asdf:ensure-mvn-version)' \
 		--eval '(push #p"$(CURDIR)/" asdf:*central-registry*)' \
+		--eval '(when (probe-file "vendor/bundle.lisp") (load "vendor/bundle.lisp"))' \
 		--eval '(asdf:load-system :rlgdx)' \
 		--eval '(rlgdx:main)' \
 		-- --test
@@ -55,3 +58,7 @@ repl:
 # Removes compiled Lisp FASL files from the common-lisp ASDF cache
 clean:
 	rm -rf ~/.cache/common-lisp/abcl-*/home/dfields/src/cl/abcl-libgdx/
+
+# Updates project dependencies from Quicklisp
+vendor-deps:
+	$(ABCL_CMD) --eval '(load "update-dependencies.lisp")'

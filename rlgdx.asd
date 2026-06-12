@@ -16,7 +16,8 @@
 (defsystem #:rlgdx
   :description "Roguelike Game Proof of Concept in ABCL with libGDX"
   :version "0.0.1"
-  :defsystem-depends-on (#:abcl-asdf)  
+  :defsystem-depends-on (#:abcl-asdf)
+  :depends-on (#:alexandria)
   :components (
     (:mvn "com.badlogicgames.gdx/gdx" :version "1.14.2")
     (:mvn "com.badlogicgames.gdx/gdx-backend-lwjgl" :version "1.14.2")

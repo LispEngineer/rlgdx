@@ -12,6 +12,8 @@
 (setf abcl-asdf:*mvn-libs-directory* #p"/usr/share/maven/lib/")
 (abcl-asdf:ensure-mvn-version)
 (push #p"/home/dfields/src/cl/abcl-libgdx/" asdf:*central-registry*)
+(when (probe-file "vendor/bundle.lisp")
+  (load "vendor/bundle.lisp"))
 (asdf:load-system :rlgdx)
 
 ;; Do not close the game when we're running from REPL

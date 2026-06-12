@@ -10,6 +10,7 @@ This describes the UI for the game.
 # Main Screen
 
 ![Main Screen UI Areas](ui-areas.png)
+ ([image source](https://docs.google.com/drawings/d/1uOxssmBqDOcKAGkXK691nkV5IdAHLBa5f6OzQadhMv4/edit))
 
 The main UI is separated into four different areas,
 of two different types:

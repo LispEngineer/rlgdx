@@ -15,6 +15,9 @@ software/cl-babel-babel-20250911151745/babel-streams.asd
 software/cl-babel-babel-20250911151745/babel.asd
 software/lmj-global-vars-20190319075150/global-vars-test.asd
 software/lmj-global-vars-20190319075150/global-vars.asd
+software/melisgl-mgl-pax-20260427141549/mgl-pax-test.asd
+software/melisgl-mgl-pax-20260427141549/mgl-pax-bootstrap.asd
+software/melisgl-mgl-pax-20260427141549/mgl-pax.asd
 software/sharplispers-split-sequence-20211208061629/split-sequence.asd
 software/sionescu-bordeaux-threads-20260329045911/bordeaux-threads.asd
 software/sionescu-iolib-20260427010427/iolib.examples.asd
@@ -28,6 +31,7 @@ software/slime-slime-20260430131105/swank.asd
 software/trivial-features-20250622-git/trivial-features-tests.asd
 software/trivial-features-20250622-git/trivial-features.asd
 software/trivial-garbage-trivial-garbage-20231019214921/trivial-garbage.asd
+software/trivial-utf-8-20250622-git/trivial-utf-8.asd
 software/uiop-3.3.7/asdf-driver.asd
 software/uiop-3.3.7/uiop.asd
 software/usocket-usocket-20260223122921/usocket-test.asd

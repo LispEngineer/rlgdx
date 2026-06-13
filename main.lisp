@@ -27,9 +27,6 @@
 (defparameter *enable-swank* t
   "If non-nil, starts a Swank server on port 4005 when the game launches.")
 
-(defparameter *swank-server-running* nil
-  "Internal tracking variable: T if the Swank server has been started.")
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Runtime Class Definitions
@@ -80,15 +77,18 @@
          (warn "Gdx.app is nil. Cannot post runnable to GL thread."))))
 
 (defun swank-running-p ()
-  "Returns T if the Swank server has been started."
-  *swank-server-running*)
+  "Returns T if the Swank server is currently running by checking Swank's internal state."
+  (when (find-package :swank)
+    (let ((servers-sym (find-symbol "*SERVERS*" :swank)))
+      (and servers-sym
+           (boundp servers-sym)
+           (not (null (symbol-value servers-sym)))))))
 
 (defun start-swank-server ()
   "Starts the Swank server on port 4005 if it isn't already running."
   (unless (swank-running-p)
     (format t "~&Starting Swank server on port 4005...~%")
-    (uiop:symbol-call :swank :create-server :port 4005 :dont-close t)
-    (setf *swank-server-running* t)))
+    (uiop:symbol-call :swank :create-server :port 4005 :dont-close t)))
 
 (defun join-lwjgl-thread ()
   "Locates the 'LWJGL Application' thread and joins it, waiting for it to terminate completely.

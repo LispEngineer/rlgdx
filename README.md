@@ -189,14 +189,15 @@ There are three main ways to connect to the running game:
 
 ### 1. The Terminal Client (`make connect`)
 
-FIXME: This doesn't work yet.
-
 This project provides a built-in terminal REPL client powered by `swank-client`.
 While the game is running, open a new terminal and run:
 ```bash
 make connect
 ```
 This will start a command-line interactive Lisp REPL connected directly to the game instance.
+
+This terminal client is currently very fragile and any conditions/exceptions encountered
+will probably cause it to crash.
 
 ### 2. VS Code (Alive Plugin)
 
@@ -274,6 +275,17 @@ To add a new library:
    * `(ql:bundle-systems '(:alexandria :bordeaux-threads) :to "vendor/")`
 4. Add the library to the `:depends-on` list in `rlgdx.asd`.
 5. Run `make vendor-deps`.
+
+### Dependency Edge Cases
+
+Sometimes Quicklisp's `bundle-systems` does not accurately resolve or bundle all
+transitive dependencies of a package. 
+
+For instance, when the `swank-client` system was vendored, its transitive dependency
+`trivial-utf-8` (required by `com.google.base`) was omitted from the bundle, causing
+`ASDF/FIND-COMPONENT:MISSING-DEPENDENCY` errors during runtime. To resolve this, 
+`:trivial-utf-8` was explicitly declared in `update-dependencies.lisp` so that Quicklisp
+forcibly bundled it, even though it is never directly referenced in the codebase.
 
 ## References
 

@@ -239,7 +239,7 @@ Example (run this from your connected REPL):
 # Dependency Management
 
 The project uses a hybrid vendoring approach to manage third-party Common Lisp libraries.
-It uses Quicklisp's built-in `bundle-systems` feature to fetch and package dependencies 
+It uses Quicklisp's built-in `bundle-systems` feature to fetch and package dependencies
 into a self-contained `vendor/` directory.
 
 This ensures that the repository remains fully self-contained, and anyone can build or run
@@ -247,7 +247,7 @@ the game offline without needing Quicklisp installed locally, while still enabli
 easy update of libraries using Quicklisp's powerful package resolution.
 
 ## How it works
-1. **Fetching**: The script `update-dependencies.lisp` loads the local Quicklisp installation 
+1. **Fetching**: The script `update-dependencies.lisp` loads the local Quicklisp installation
    and uses `ql:bundle-systems` to download the required libraries (like `alexandria`) directly
    into the `vendor/` directory.
    * This is typically installed in `~/quicklisp/setup.lisp` after it's been set up.
@@ -271,7 +271,7 @@ make vendor-deps
 To add a new library:
 1. Open `update-dependencies.lisp`.
 2. Locate the line: `(ql:bundle-systems '(:alexandria) :to "vendor/")`
-3. Add the new library to the quoted list, for example: 
+3. Add the new library to the quoted list, for example:
    * `(ql:bundle-systems '(:alexandria :bordeaux-threads) :to "vendor/")`
 4. Add the library to the `:depends-on` list in `rlgdx.asd`.
 5. Run `make vendor-deps`.
@@ -279,18 +279,18 @@ To add a new library:
 ### Dependency Edge Cases
 
 Sometimes Quicklisp's `bundle-systems` does not accurately resolve or bundle all
-transitive dependencies of a package. 
+transitive dependencies of a package.
 
 For instance, when the `swank-client` system was vendored, its transitive dependency
 `trivial-utf-8` (required by `com.google.base`) was omitted from the bundle, causing
-`ASDF/FIND-COMPONENT:MISSING-DEPENDENCY` errors during runtime. To resolve this, 
+`ASDF/FIND-COMPONENT:MISSING-DEPENDENCY` errors during runtime. To resolve this,
 `:trivial-utf-8` was explicitly declared in `update-dependencies.lisp` so that Quicklisp
 forcibly bundled it, even though it is never directly referenced in the codebase.
 
 ## References
 
 * [Quicklisp Site](https://www.quicklisp.org/beta/)
-* [Quicklisp Bundles Documentation](https://www.quicklisp.org/beta/bundles.html) - Documentation 
+* [Quicklisp Bundles Documentation](https://www.quicklisp.org/beta/bundles.html) - Documentation
   on how `ql:bundle-systems` creates standalone bundles that can be loaded independently.
 
 

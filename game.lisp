@@ -69,7 +69,7 @@
   (format t "~&Initializing SpriteBatch and Texture...~%")
   (finish-output)
   (let* ((files (java:jfield "com.badlogic.gdx.Gdx" "files"))
-         (file-handle (java:jcall "internal" files "assets/sprite.png")))
+         (file-handle (java:jcall "internal" files "assets/sprite.jpg")))
     (setf (game-batch game) (java:jnew "com.badlogic.gdx.graphics.g2d.SpriteBatch"))
     (setf (game-texture game) (java:jnew "com.badlogic.gdx.graphics.Texture" file-handle))
     (format t "~&Initialization complete. SpriteBatch and Texture loaded.~%")

@@ -12,10 +12,10 @@
   (format *error-output* "~&[TEST] Running rlgdx unit tests...~%")
   (let ((failures 0))
     ;; Test 1: Check if sprite image file exists
-    (if (probe-file "assets/sprite.png")
-      (format *error-output* "[TEST] PASS: assets/sprite.png exists.~%")
+    (if (probe-file "assets/sprite.jpg")
+      (format *error-output* "[TEST] PASS: assets/sprite.jpg exists.~%")
       (progn
-        (format *error-output* "[TEST] FAIL: assets/sprite.png does not exist.~%")
+        (format *error-output* "[TEST] FAIL: assets/sprite.jpg does not exist.~%")
         (incf failures)))
 
     ;; Test 2: Check package exports

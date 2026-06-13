@@ -315,7 +315,7 @@ Quicklisp will *not* automatically delete the old files. To do a clean update:
 
 Located in the `assets` subdirectory.
 
-* `sprite.png`: Gemini created sprite for testing
+* `sprite.jpg`: Gemini created sprite for testing
 
 
 # Java and CLOS Class Interface into libGDX

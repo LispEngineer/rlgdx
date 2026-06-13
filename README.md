@@ -156,6 +156,10 @@ Tooling:
 TODO: Package this as a file/directory that can be run on anyone's
 Linux computer that has JRE 17.
 
+References:
+* [Reddit post](https://www.reddit.com/r/lisp/comments/2u7m4k/how_do_you_compile_a_runnable_deployable_jar_with/)
+  * [Referenced post in Archive.org](https://web.archive.org/web/20190410014116/https://www.didierverna.net/blog/index.php?post/2011/01/22/Towards-ABCL-Standalone-Executables)
+
 ## Phase 2B: Packaging for Windows
 
 TODO

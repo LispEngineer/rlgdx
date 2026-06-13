@@ -194,7 +194,8 @@ While the game is running, open a new terminal and run:
 ```bash
 make connect
 ```
-This will launch `icl` and connect directly to the running Slynk instance using `icl --connect=localhost:24005`.
+This will launch `icl` and connect directly to the running Slynk instance 
+using `icl --connect=localhost:24005`.
 
 ### 2. Emacs (Sly)
 
@@ -223,6 +224,10 @@ To configure Sly in Emacs (for new users), add this to the
 ```
 
 To launch Emacs in a terminal instead of a desktop window, use `emacs -nw`.
+
+### 3. VS Code Olive Extension
+
+TODO
 
 ## Safely Executing Graphics Code (`with-gl-thread`)
 

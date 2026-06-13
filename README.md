@@ -94,7 +94,7 @@ Tooling:
   * clean
   * (A "test" target will be added in the future.)
 * Create an appropriate `.asd` ASDF system definition file,
-  which we will call `rlgdx.asd`.
+  which will be called `rlgdx.asd`.
 * Create an appropriate `packages.lisp` that defines the game's
   packages.
   * Only one package will be made for now, `rlgdx`.
@@ -125,7 +125,7 @@ Game Functionality:
   of the current `ApplicationAdapter`.
 * Define the CLOS object in a different `.lisp` file.
 
-## Phase 1C: REPL & Libraries
+## Phase 1C: REPL & Libraries - DONE
 
 Each step in this Phase should be accomplished independently, so as not to
 cause complexity if one part of it doesn't work.
@@ -177,7 +177,7 @@ TODO
 
 # Network REPL & Swank
 
-The game optionally embeds a Swank server, allowing you to connect a live REPL
+The game optionally embeds a Swank server, allowing a connection a live REPL
 to the running application and interact with its state dynamically. This feature
 is controlled by the global `*enable-swank*` variable (which defaults to `t`).
 
@@ -185,7 +185,8 @@ When the game launches, it starts a Swank server listening on `localhost:4005`.
 
 ## Connecting to the REPL
 
-There are three main ways to connect to the running game:
+There are three main ways to connect to the running game. The best one, by far,
+is #3, using Emacs's SLIME client.
 
 ### 1. The Terminal Client (`make connect`)
 
@@ -197,12 +198,15 @@ make connect
 This will start a command-line interactive Lisp REPL connected directly to the game instance.
 
 This terminal client is currently very fragile and any conditions/exceptions encountered
-will probably cause it to crash.
+will probably cause it to crash. The 
 
 ### 2. VS Code (Alive Plugin)
 
-If you are developing in Visual Studio Code, you can use the **Alive** plugin
-to connect directly to the Swank server:
+*This does not actually work in my version of Alive.*
+(FIXME: Figure out how to make Alive do this.)
+
+Using Visual Studio Code, the **Alive** plugin
+may be able to connect directly to the Swank server:
 1. Ensure the game is running.
 2. In VS Code, open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
 3. Select `Alive: Attach to REPL`.
@@ -212,11 +216,26 @@ to connect directly to the Swank server:
 
 ### 3. Emacs (SLIME)
 
-*(This is untested by me as I'm primarily using Alive right now.)*
-
-If you are using Emacs, you can connect to the running game using SLIME:
+Using Emacs, it is possible to connect to the running game using SLIME:
 1. Run `M-x slime-connect`.
 2. Accept the default Host (`127.0.0.1`) and Port (`4005`).
+
+To configure SLIME in Emacs (for new users), add this to the
+`~/.emacs.d/init.el` file and launch Emacs:
+
+```lisp
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
+(unless (package-installed-p 'slime)
+  (package-refresh-contents)
+  (package-install 'slime))
+
+(setq inferior-lisp-program "sbcl")
+(require 'slime)
+(slime-setup '(slime-fancy slime-quicklisp))
+```
 
 ## Safely Executing Graphics Code (`with-gl-thread`)
 

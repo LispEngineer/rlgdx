@@ -29,7 +29,7 @@ implementation and the libGDX game graphics library.
 
 ### Notes on `icl` and `ros`
 
-To get Roswell to run ABCL with a specific JVM, you need to set the
+To get Roswell to run ABCL with a specific JVM, it is necessary to set the
 environment variables correctly *before* installing ABCL, or reinstall it.
 For example:
 
@@ -53,7 +53,7 @@ COMMON-LISP-USER> (lisp-implementation-version)
 => [2] "amd64-Linux-7.0.12-x64v3-xanmod1"
 ```
 
-If you use a current JVM (e.g. 25), ABCL will give spurious errors/warnings.
+If a current JVM is in use (e.g. 25), ABCL will give spurious errors/warnings.
 
 ## How to Build and Run (Phase 1)
 
@@ -212,7 +212,7 @@ may be able to connect directly to the Swank server:
 3. Select `Alive: Attach to REPL`.
    * FIXME: This command does not exist in my version of Alive.
 4. Enter the host/port (defaults to `127.0.0.1` and `4005`).
-5. You can now evaluate Lisp code directly from your editor.
+5. Lisp code can now be evaluated directly from the VS Code editor.
 
 ### 3. Emacs (SLIME)
 
@@ -237,6 +237,8 @@ To configure SLIME in Emacs (for new users), add this to the
 (slime-setup '(slime-fancy slime-quicklisp))
 ```
 
+To launch Emacs in a terminal instead of a desktop window, use `emacs -nw`.
+
 ## Safely Executing Graphics Code (`with-gl-thread`)
 
 **WARNING:** LibGDX (and OpenGL in general) strictly requires all graphics-related
@@ -244,16 +246,16 @@ calls to be executed on the main rendering thread. Since the Swank REPL runs in 
 background thread, attempting to modify the game state or graphics directly from the
 REPL will crash the game!
 
-To safely interact with the game from the REPL, wrap your code in the
-`rlgdx:with-gl-thread` macro. This macro uses Java interop to package your code into a
+To safely interact with the game from the REPL, wrap the code in the
+`rlgdx:with-gl-thread` macro. This macro uses Java interop to package the code into a
 Java `Runnable` and submits it to `Gdx.app.postRunnable()`.
 
-Example (run this from your connected REPL):
+Example (run this from the connected REPL):
 ```lisp
-(rlgdx:with-gl-thread
-  (setf (rlgdx:game-exit-on-close rlgdx:*active-game*) t))
+(rlgdx:with-gl-thread (format t "Hello world!~%"))
 ```
 
+This will print the message in the terminal where the game was run.
 
 # Dependency Management
 
@@ -283,7 +285,7 @@ To re-download or update the existing dependencies from Quicklisp, run:
 ```bash
 make vendor-deps
 ```
-*Note: You must have Quicklisp installed at `~/quicklisp/setup.lisp` to run this target.*
+*Note: Quicklisp must be installed installed at `~/quicklisp/setup.lisp` to run this target.*
 
 ### Adding new dependencies
 

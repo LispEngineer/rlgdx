@@ -13,9 +13,13 @@
     #:*active-game*
     #:*game-instance*
     #:*exit-on-close*
+    #:*enable-swank*
     
     ;; Entry Point
     #:main
+    #:start-swank-server
+    #:swank-running-p
+    #:with-gl-thread
 
     ;; CLOS Class and Accessors
     #:rlgdx-game

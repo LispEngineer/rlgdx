@@ -10,6 +10,6 @@
       (error "Quicklisp not found at ~/quicklisp/setup.lisp. Please install Quicklisp to fetch dependencies.")))
 
 (format t "Fetching dependencies and bundling into vendor/ directory...~%")
-(ql:bundle-systems '(:alexandria) :to "vendor/")
+(ql:bundle-systems '(:alexandria :swank :swank-client) :to "vendor/")
 (format t "Done! Dependencies are now vendored.~%")
 (ext:quit)

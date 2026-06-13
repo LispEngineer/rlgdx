@@ -24,6 +24,12 @@
 (defparameter *game-class* nil
   "The dynamically generated Java class representing the Game.")
 
+(defparameter *enable-swank* t
+  "If non-nil, starts a Swank server on port 4005 when the game launches.")
+
+(defparameter *swank-server-running* nil
+  "Internal tracking variable: T if the Swank server has been started.")
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Runtime Class Definitions
@@ -63,6 +69,27 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helper Utilities
 
+(defmacro with-gl-thread (&body body)
+  "Executes the given body of code on the main OpenGL rendering thread using LibGDX postRunnable.
+   This is required for safely modifying game state or graphics from a background thread (like Swank)."
+  `(let* ((thunk (lambda () ,@body))
+          (runnable (java:jinterface-implementation "java.lang.Runnable" "run" thunk))
+          (app (java:jfield "com.badlogic.gdx.Gdx" "app")))
+     (if app
+         (java:jcall "postRunnable" app runnable)
+         (warn "Gdx.app is nil. Cannot post runnable to GL thread."))))
+
+(defun swank-running-p ()
+  "Returns T if the Swank server has been started."
+  *swank-server-running*)
+
+(defun start-swank-server ()
+  "Starts the Swank server on port 4005 if it isn't already running."
+  (unless (swank-running-p)
+    (format t "~&Starting Swank server on port 4005...~%")
+    (uiop:symbol-call :swank :create-server :port 4005 :dont-close t)
+    (setf *swank-server-running* t)))
+
 (defun join-lwjgl-thread ()
   "Locates the 'LWJGL Application' thread and joins it, waiting for it to terminate completely.
    It tries a few times to find the thread in case it hasn't yet started."
@@ -99,6 +126,9 @@
       (format t "~&Starting rlgdx...~%")
       (finish-output)
       (ensure-game-class)
+
+      (when *enable-swank*
+        (start-swank-server))
       
       (let* ((clos-game (make-instance 'rlgdx-game))
              (java-instance (java:jnew *game-class* clos-game)))

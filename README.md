@@ -3,7 +3,7 @@
 * Author: Douglas P. Fields, Jr - symbolics@lisp.engineer
 * License: [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 * Created: 2026-06-11
-* Last updated: 2026-06-11
+* Last updated: 2026-06-12
 
 ## Overview
 
@@ -26,6 +26,34 @@ implementation and the libGDX game graphics library.
 
 * `JDK_HOME=/opt/jdk-17.0.19+10/ rlwrap /opt/jdk-17.0.19+10/bin/java -jar /opt/abcl-1.9.2/abcl.jar`
 * `(load "load-repl.lisp")`
+
+### Notes on `icl` and `ros`
+
+To get Roswell to run ABCL with a specific JVM, you need to set the
+environment variables correctly *before* installing ABCL, or reinstall it.
+For example:
+
+```bash
+export JAVA_HOME=/opt/jdk-17.0.19+10/
+PATH=$JAVA_HOME/bin/:$PATH
+which java
+ros install abcl-bin
+ros run
+```
+```lisp
+(lisp-implementation-version)
+```
+```bash
+icl
+```
+```lisp
+COMMON-LISP-USER> (lisp-implementation-version)
+=> [0] "1.9.3"
+=> [1] "OpenJDK_64-Bit_Server_VM-Eclipse_Adoptium-17.0.19+10"
+=> [2] "amd64-Linux-7.0.12-x64v3-xanmod1"
+```
+
+If you use a current JVM (e.g. 25), ABCL will give spurious errors/warnings.
 
 ## How to Build and Run (Phase 1)
 
@@ -104,7 +132,7 @@ cause complexity if one part of it doesn't work.
 
 Tooling:
 1. Create a `repl` Makefile target. - DONE
-   * This should start an ACBL REPL with `rlwrap`.
+   * This should start an ABCL REPL with `rlwrap`.
    * This should load the `rlgdx` package at startup, using the
      `load-repl.lisp` file.
    * This should set the initial package to `rlgdx`.
@@ -114,12 +142,12 @@ Tooling:
      to invoke the game.
 2. Load `alexandria` library in the `.asd` and make some tests proving
    it is loaded and works. - DONE
-3. Start up a backround REPL socket listener at program start.
+3. Start up a background REPL socket listener at program start. - DONE
    * Set up a way to call into the main OpenGL thread (since it is single-threaded)
      to make something run on that thread.
      See: `Gdx.app.postRunnable()`.
    * See: Swank, Slynk.
-4. Create a `connect` Makefile target.
+4. Create a `connect` Makefile target. - DONE
    * This should connect to a running instance of the game via Swank (or the like)
      and give a nice REPL to the end user.
 
@@ -145,6 +173,66 @@ TODO
 ## Phase N:
 
 * Packaging for macOS, iOS - I don't have any current Macs so can't do this.
+
+
+# Network REPL & Swank
+
+The game optionally embeds a Swank server, allowing you to connect a live REPL
+to the running application and interact with its state dynamically. This feature
+is controlled by the global `*enable-swank*` variable (which defaults to `t`).
+
+When the game launches, it starts a Swank server listening on `localhost:4005`.
+
+## Connecting to the REPL
+
+There are three main ways to connect to the running game:
+
+### 1. The Terminal Client (`make connect`)
+
+FIXME: This doesn't work yet.
+
+This project provides a built-in terminal REPL client powered by `swank-client`.
+While the game is running, open a new terminal and run:
+```bash
+make connect
+```
+This will start a command-line interactive Lisp REPL connected directly to the game instance.
+
+### 2. VS Code (Alive Plugin)
+
+If you are developing in Visual Studio Code, you can use the **Alive** plugin
+to connect directly to the Swank server:
+1. Ensure the game is running.
+2. In VS Code, open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
+3. Select `Alive: Attach to REPL`.
+   * FIXME: This command does not exist in my version of Alive.
+4. Enter the host/port (defaults to `127.0.0.1` and `4005`).
+5. You can now evaluate Lisp code directly from your editor.
+
+### 3. Emacs (SLIME)
+
+*(This is untested by me as I'm primarily using Alive right now.)*
+
+If you are using Emacs, you can connect to the running game using SLIME:
+1. Run `M-x slime-connect`.
+2. Accept the default Host (`127.0.0.1`) and Port (`4005`).
+
+## Safely Executing Graphics Code (`with-gl-thread`)
+
+**WARNING:** LibGDX (and OpenGL in general) strictly requires all graphics-related
+calls to be executed on the main rendering thread. Since the Swank REPL runs in a
+background thread, attempting to modify the game state or graphics directly from the
+REPL will crash the game!
+
+To safely interact with the game from the REPL, wrap your code in the
+`rlgdx:with-gl-thread` macro. This macro uses Java interop to package your code into a
+Java `Runnable` and submits it to `Gdx.app.postRunnable()`.
+
+Example (run this from your connected REPL):
+```lisp
+(rlgdx:with-gl-thread
+  (setf (rlgdx:game-exit-on-close rlgdx:*active-game*) t))
+```
 
 
 # Dependency Management

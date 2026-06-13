@@ -10,7 +10,7 @@ RLWRAP = /usr/bin/rlwrap
 ABCL_CMD = JDK_HOME=$(JDK_PATH) $(JDK_PATH)/bin/java -jar $(ABCL_JAR)
 REPL_CMD = JDK_HOME=$(JDK_PATH) $(RLWRAP) $(JDK_PATH)/bin/java -jar $(ABCL_JAR)
 
-.PHONY: all build run test clean repl vendor-deps
+.PHONY: all build run test clean repl vendor-deps connect
 
 all: build
 
@@ -63,3 +63,7 @@ clean:
 # Updates project dependencies from Quicklisp
 vendor-deps:
 	$(ABCL_CMD) --eval '(load "update-dependencies.lisp")'
+
+# Connects to the running game instance via Swank
+connect:
+	$(REPL_CMD) --eval '(load "connect.lisp")'

@@ -131,6 +131,14 @@ The Common Lisp libraries in use are:
   * [UIOP Readme](https://gitlab.common-lisp.net/asdf/asdf/blob/master/uiop/README.md)
   * [UIOP Manual - HTML](https://asdf.common-lisp.dev/uiop.html)
   * [UIOP Manual - PDF](https://asdf.common-lisp.dev/uiop.pdf)
+* Alexandria
+  * [Alexandria - GitHub](https://github.com/salva/cl-alexandria)
+  * [Alexandria - Reference Manual](https://quickref.common-lisp.net/alexandria.html)
+  * [Alexandria - ReadTheDocs](https://common-lisp-libraries.readthedocs.io/alexandria/)
+* Swank & Swank-Client (Network REPL)
+  * [SLIME / Swank - GitHub](https://github.com/slime/slime)
+  * [SLIME / Swank - Documentation](https://slime.common-lisp.dev/doc/html/)
+  * [Swank-Client - GitHub](https://github.com/brown/swank-client)
 
 The Java libraries in use are:
 * [libGDX Home](https://libgdx.com/)
@@ -150,7 +158,6 @@ The Java libraries in use are:
     for QuickLisp
 
 * Common CL libraries:
-  * Alexandria
   * Seraphim
   * Anaphora
-  * Swank (network REPL listener), or Slynk
+  * Slynk

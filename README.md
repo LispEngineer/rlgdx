@@ -146,9 +146,9 @@ Tooling:
    * Set up a way to call into the main OpenGL thread (since it is single-threaded)
      to make something run on that thread.
      See: `Gdx.app.postRunnable()`.
-   * See: Swank, Slynk.
+   * See: Sly, Slynk.
 4. Create a `connect` Makefile target. - DONE
-   * This should connect to a running instance of the game via Swank (or the like)
+   * This should connect to a running instance of the game via Slynk.
      and give a nice REPL to the end user.
 
 ## Phase 2A: Packaging for Linux
@@ -175,52 +175,37 @@ TODO
 * Packaging for macOS, iOS - I don't have any current Macs so can't do this.
 
 
-# Network REPL & Swank
+# Network REPL & Slynk
 
-The game optionally embeds a Swank server, allowing a connection a live REPL
+The game optionally embeds a Slynk server, allowing you to connect a live REPL
 to the running application and interact with its state dynamically. This feature
-is controlled by the global `*enable-swank*` variable (which defaults to `t`).
+is controlled by the global `*enable-slynk*` variable (which defaults to `t`).
 
-When the game launches, it starts a Swank server listening on `localhost:4005`.
+When the game launches, it starts a Slynk server listening on `localhost:24005` (the port is configurable via `rlgdx:*slynk-port*`).
 
 ## Connecting to the REPL
 
-There are three main ways to connect to the running game. The best one, by far,
-is #3, using Emacs's SLIME client.
+There are three main ways to connect to the running game:
 
 ### 1. The Terminal Client (`make connect`)
 
-This project provides a built-in terminal REPL client powered by `swank-client`.
+You can connect to the server via the `icl` (Interactive Common Lisp) utility. 
 While the game is running, open a new terminal and run:
 ```bash
 make connect
 ```
-This will start a command-line interactive Lisp REPL connected directly to the game instance.
+This will launch `icl` and connect directly to the running Slynk instance using `icl --connect=localhost:24005`.
 
-This terminal client is currently very fragile and any conditions/exceptions encountered
-will probably cause it to crash. The 
+### 2. Emacs (Sly)
 
-### 2. VS Code (Alive Plugin)
+If you are using Emacs, you can connect to the running game using Sly:
+1. Run `M-x sly-connect`.
+2. Accept the default Host (`127.0.0.1`) and enter Port (`24005`).
 
-*This does not actually work in my version of Alive.*
-(FIXME: Figure out how to make Alive do this.)
+If you have SLIME installed, you may get some warnings and be asked
+to disable it.
 
-Using Visual Studio Code, the **Alive** plugin
-may be able to connect directly to the Swank server:
-1. Ensure the game is running.
-2. In VS Code, open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
-3. Select `Alive: Attach to REPL`.
-   * FIXME: This command does not exist in my version of Alive.
-4. Enter the host/port (defaults to `127.0.0.1` and `4005`).
-5. Lisp code can now be evaluated directly from the VS Code editor.
-
-### 3. Emacs (SLIME)
-
-Using Emacs, it is possible to connect to the running game using SLIME:
-1. Run `M-x slime-connect`.
-2. Accept the default Host (`127.0.0.1`) and Port (`4005`).
-
-To configure SLIME in Emacs (for new users), add this to the
+To configure Sly in Emacs (for new users), add this to the
 `~/.emacs.d/init.el` file and launch Emacs:
 
 ```lisp
@@ -228,13 +213,13 @@ To configure SLIME in Emacs (for new users), add this to the
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(unless (package-installed-p 'slime)
+;; Install SLY if it isn't already installed
+(unless (package-installed-p 'sly)
   (package-refresh-contents)
-  (package-install 'slime))
+  (package-install 'sly))
 
+;; Set SBCL as your default Lisp program
 (setq inferior-lisp-program "sbcl")
-(require 'slime)
-(slime-setup '(slime-fancy slime-quicklisp))
 ```
 
 To launch Emacs in a terminal instead of a desktop window, use `emacs -nw`.
@@ -242,7 +227,7 @@ To launch Emacs in a terminal instead of a desktop window, use `emacs -nw`.
 ## Safely Executing Graphics Code (`with-gl-thread`)
 
 **WARNING:** LibGDX (and OpenGL in general) strictly requires all graphics-related
-calls to be executed on the main rendering thread. Since the Swank REPL runs in a
+calls to be executed on the main rendering thread. Since the Slynk REPL runs in a
 background thread, attempting to modify the game state or graphics directly from the
 REPL will crash the game!
 
@@ -300,13 +285,15 @@ To add a new library:
 ### Dependency Edge Cases
 
 Sometimes Quicklisp's `bundle-systems` does not accurately resolve or bundle all
-transitive dependencies of a package.
+transitive dependencies of a package. If a system fails to load due to a missing
+dependency, explicitly add it to the list in `update-dependencies.lisp`.
 
-For instance, when the `swank-client` system was vendored, its transitive dependency
-`trivial-utf-8` (required by `com.google.base`) was omitted from the bundle, causing
-`ASDF/FIND-COMPONENT:MISSING-DEPENDENCY` errors during runtime. To resolve this,
-`:trivial-utf-8` was explicitly declared in `update-dependencies.lisp` so that Quicklisp
-forcibly bundled it, even though it is never directly referenced in the codebase.
+### Removing Old Dependencies
+
+If the dependencies in `update-dependencies.lisp` change by removing a package, 
+Quicklisp will *not* automatically delete the old files. To do a clean update:
+1. Delete the vendored software directory: `rm -rf vendor/`
+2. Run `make vendor-deps` to re-fetch only the currently declared dependencies.
 
 ## References
 

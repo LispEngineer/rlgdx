@@ -135,10 +135,9 @@ The Common Lisp libraries in use are:
   * [Alexandria - GitHub](https://github.com/salva/cl-alexandria)
   * [Alexandria - Reference Manual](https://quickref.common-lisp.net/alexandria.html)
   * [Alexandria - ReadTheDocs](https://common-lisp-libraries.readthedocs.io/alexandria/)
-* Swank & Swank-Client (Network REPL)
-  * [SLIME / Swank - GitHub](https://github.com/slime/slime)
-  * [SLIME / Swank - Documentation](https://slime.common-lisp.dev/doc/html/)
-  * [Swank-Client - GitHub](https://github.com/brown/swank-client)
+* Slynk (Network REPL)
+  * [Sly - GitHub](https://github.com/joaotavora/sly)
+  * [Sly - Documentation](https://joaotavora.github.io/sly/)
 
 The Java libraries in use are:
 * [libGDX Home](https://libgdx.com/)

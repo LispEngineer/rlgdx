@@ -13,12 +13,13 @@
     #:*active-game*
     #:*game-instance*
     #:*exit-on-close*
-    #:*enable-swank*
+    #:*enable-slynk*
+    #:*slynk-port*
     
     ;; Entry Point
     #:main
-    #:start-swank-server
-    #:swank-running-p
+    #:start-slynk-server
+    #:slynk-running-p
     #:with-gl-thread
 
     ;; CLOS Class and Accessors

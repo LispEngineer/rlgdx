@@ -64,6 +64,6 @@ clean:
 vendor-deps:
 	$(ABCL_CMD) --eval '(load "update-dependencies.lisp")'
 
-# Connects to the running game instance via Swank
+# Connects to the running game instance via icl
 connect:
-	$(REPL_CMD) --eval '(load "connect.lisp")'
+	icl --connect=localhost:24005

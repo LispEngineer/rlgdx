@@ -24,8 +24,11 @@
 (defparameter *game-class* nil
   "The dynamically generated Java class representing the Game.")
 
-(defparameter *enable-swank* t
-  "If non-nil, starts a Swank server on port 4005 when the game launches.")
+(defparameter *enable-slynk* t
+  "If non-nil, starts a Slynk server when the game launches.")
+
+(defparameter *slynk-port* 24005
+  "The port on which the Slynk server will listen.")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -68,7 +71,7 @@
 
 (defmacro with-gl-thread (&body body)
   "Executes the given body of code on the main OpenGL rendering thread using LibGDX postRunnable.
-   This is required for safely modifying game state or graphics from a background thread (like Swank)."
+   This is required for safely modifying game state or graphics from a background thread (like Slynk)."
   `(let* ((thunk (lambda () ,@body))
           (runnable (java:jinterface-implementation "java.lang.Runnable" "run" thunk))
           (app (java:jfield "com.badlogic.gdx.Gdx" "app")))
@@ -76,19 +79,19 @@
          (java:jcall "postRunnable" app runnable)
          (warn "Gdx.app is nil. Cannot post runnable to GL thread."))))
 
-(defun swank-running-p ()
-  "Returns T if the Swank server is currently running by checking Swank's internal state."
-  (when (find-package :swank)
-    (let ((servers-sym (find-symbol "*SERVERS*" :swank)))
+(defun slynk-running-p ()
+  "Returns T if the Slynk server is currently running by checking Slynk's internal state."
+  (when (find-package :slynk)
+    (let ((servers-sym (find-symbol "*SERVERS*" :slynk)))
       (and servers-sym
            (boundp servers-sym)
            (not (null (symbol-value servers-sym)))))))
 
-(defun start-swank-server ()
-  "Starts the Swank server on port 4005 if it isn't already running."
-  (unless (swank-running-p)
-    (format t "~&Starting Swank server on port 4005...~%")
-    (uiop:symbol-call :swank :create-server :port 4005 :dont-close t)))
+(defun start-slynk-server ()
+  "Starts the Slynk server on the configured port if it isn't already running."
+  (unless (slynk-running-p)
+    (format t "~&Starting Slynk server on port ~A...~%" *slynk-port*)
+    (uiop:symbol-call :slynk :create-server :port *slynk-port* :dont-close t)))
 
 (defun join-lwjgl-thread ()
   "Locates the 'LWJGL Application' thread and joins it, waiting for it to terminate completely.
@@ -127,8 +130,8 @@
       (finish-output)
       (ensure-game-class)
 
-      (when *enable-swank*
-        (start-swank-server))
+      (when *enable-slynk*
+        (start-slynk-server))
       
       (let* ((clos-game (make-instance 'rlgdx-game))
              (java-instance (java:jnew *game-class* clos-game)))
